@@ -243,12 +243,12 @@ class ExternalRuntime:
                 source = self._source + '\n' + source
             
             (fd, filename) = tempfile.mkstemp(prefix='execjs', suffix='.js')
-            os.close(fd)
             try:
                 with io.open(filename, "w+", encoding=self._runtime._encoding) as fp:
                     fp.write(self._compile(source))
                 output = self._runtime._execfile(filename)
             finally:
+                os.close(fd) # earlier the js file was getting closed before it could be written
                 os.remove(filename)
             
             output = output.decode(self._runtime._encoding)
